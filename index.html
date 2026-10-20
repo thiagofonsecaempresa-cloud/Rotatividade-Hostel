@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#173f35">
+<title>Rotatividade do Hostel</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>Rotatividade do Hostel</h1>
+  <p>Controle mensal de limpeza e troca de enxoval • funciona localmente no navegador</p>
+</header>
+<main>
+  <section class="panel no-print">
+    <div class="toolbar">
+      <label class="field">Unidade
+        <select id="unit"><option value="SR">SR</option><option value="MK">MK</option></select>
+      </label>
+      <label class="field">Mês
+        <input id="month" type="month" value="2026-10">
+      </label>
+      <label class="field">Nome do responsável (opcional)
+        <input id="responsible" type="text" placeholder="Quem está preenchendo">
+      </label>
+      <button class="primary" id="saveBtn">Salvar neste dispositivo</button>
+      <button class="soft" id="clearMonth">Limpar mês</button>
+    </div>
+    <div class="legend">
+      <span class="tag blank">Em branco = pendente / sem marcação</span>
+      <span class="tag l">L = limpo / troca realizada</span>
+      <span class="tag ls">LS = limpeza simples / troca realizada</span>
+      <span class="tag x">X = não limpar / sem troca</span>
+    </div>
+    <p class="hint">Toque em cada quadradinho e escolha a marcação. L e LS entram na contagem de trocas; X e em branco não entram. Os dados são separados por unidade e mês. Use o backup JSON para transferir lançamentos entre dispositivos.</p>
+  </section>
+
+
+
+  <section class="panel no-print" id="visualRoomMap">
+    <h2 style="font-size:17px;margin:0 0 4px">Mapa visual dos quartos e camas</h2>
+    <p class="hint" style="margin-top:0">Cada cartão representa um quarto; cada etiqueta representa uma cama que tem sua própria linha na grade mensal.</p>
+    <div class="room-map">
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 1</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 2</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 3</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 4</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 5</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 6</span><span class="room-kind">Solteiro</span></div><div class="room-beds"><div class="bed-chip single">Cama de solteiro</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 7</span><span class="room-kind">Compartilhado</span></div><div class="room-beds"><div class="bed-chip single">Cama 1</div><div class="bed-chip single">Cama 2</div><div class="bed-chip single">Cama 3</div><div class="bed-chip single">Cama 4</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 8</span><span class="room-kind">Compartilhado</span></div><div class="room-beds"><div class="bed-chip single">Cama 1</div><div class="bed-chip single">Cama 2</div><div class="bed-chip single">Cama 3</div><div class="bed-chip single">Cama 4</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 9</span><span class="room-kind">Casal + extra</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div><div class="bed-chip extra">Extra solteiro</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 10</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 11</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 12</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 13</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 14</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 15</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 16</span><span class="room-kind">Casal</span></div><div class="room-beds"><div class="bed-chip">Cama de casal</div></div></div>
+      <div class="room-tile"><div class="room-tile-head"><span>Quarto 17</span><span class="room-kind">Solteiro</span></div><div class="room-beds"><div class="bed-chip single">Cama de solteiro</div></div></div>
+    </div>
+    <div class="map-key"><span class="tag l">Verde: cama de casal</span><span class="tag ls">Laranja: cama de solteiro</span><span class="tag x">Cinza: cama extra</span></div>
+  </section>
+
+  <section class="panel no-print" id="roomInventory">
+    <h2 style="font-size:17px;margin:0 0 10px">Quartos e camas cadastrados</h2>
+    <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(175px,1fr))">
+      <div class="metric"><span class="label">Quartos 1–5</span><strong style="font-size:18px">1 cama de casal</strong><span class="small">em cada quarto</span></div>
+      <div class="metric"><span class="label">Quarto 9</span><strong style="font-size:18px">1 casal + 1 solteiro</strong><span class="small">cama extra</span></div>
+      <div class="metric"><span class="label">Quartos 10–16</span><strong style="font-size:18px">1 cama de casal</strong><span class="small">em cada quarto</span></div>
+      <div class="metric"><span class="label">Quartos 6 e 17</span><strong style="font-size:18px">1 cama de solteiro</strong><span class="small">em cada quarto</span></div>
+      <div class="metric"><span class="label">Quarto 7</span><strong style="font-size:18px">4 camas de solteiro</strong><span class="small">cada cama tem sua própria linha</span></div>
+      <div class="metric"><span class="label">Quarto 8</span><strong style="font-size:18px">4 camas de solteiro</strong><span class="small">cada cama tem sua própria linha</span></div>
+    </div>
+    <p class="hint">Total cadastrado: 13 camas de casal e 11 camas de solteiro, incluindo a cama extra do quarto 9. Na grade abaixo, cada cama aparece em uma linha e cada dia em uma coluna.</p>
+  </section>
+
+  <section class="panel print-panel">
+    <div class="toolbar no-print" style="justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><strong id="gridTitle">Grade mensal</strong><div class="small">Unidade, quarto, cama e dias do mês. SR é a unidade principal; MK funciona separadamente.</div></div>
+      <div class="actions">
+        <button class="soft" id="csvBtn">Exportar CSV (Excel)</button>
+        <button class="soft" id="jsonBtn">Backup JSON</button>
+        <button class="soft" id="importBtn">Importar JSON</button>
+        <button class="soft" id="printBtn">Imprimir / salvar PDF</button>
+        <input id="jsonFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <div class="tablewrap"><table id="grid"></table></div>
+    <p class="hint no-print">Na unidade SR, outubro de 2026 foi pré-preenchido por leitura visual da foto enviada. Revise marcações rabiscadas ou pouco nítidas antes de usar os totais. Para imprimir a grade, use o botão “Imprimir / salvar PDF”. A exportação CSV abre no Excel; o backup JSON guarda os lançamentos para continuar em outro dispositivo.</p>
+  </section>
+
+  <section class="panel">
+    <div class="cards">
+      <div class="metric"><span class="label">Trocas registradas no mês</span><strong id="mTotal">0</strong></div>
+      <div class="metric"><span class="label">Trocas de cama de casal</span><strong id="mCouple">0</strong></div>
+      <div class="metric"><span class="label">Trocas de cama de solteiro</span><strong id="mSingle">0</strong></div>
+      <div class="metric"><span class="label">Dia com mais trocas</span><strong id="mPeak">—</strong></div>
+    </div>
+    <p class="hint" id="summaryNote">A contagem considera L e LS como trocas realizadas.</p>
+  </section>
+
+  <section class="panel">
+    <h2 style="font-size:17px;margin:0 0 10px">Resumo por dia</h2>
+    <div class="tablewrap" style="max-height:320px"><table id="daily"></table></div>
+    <p class="hint">“Enxoval de casal” significa uma troca registrada numa cama de casal. “Cama de solteiro” conta camas individuais trocadas; quartos compartilhados não são multiplicados como se cada cama usasse o conjunto completo de 17 peças.</p>
+  </section>
+
+  <section class="panel no-print">
+    <details>
+      <summary>Como usar no GitHub Pages e entre celular e notebook</summary>
+      <p class="hint">Esta versão pode ser publicada como index.html no GitHub Pages. A hospedagem entrega a página, mas não sincroniza os lançamentos: cada navegador guarda sua própria cópia local. Os dados de SR e MK são separados. Para passar os lançamentos do celular para o notebook (ou vice-versa), toque em “Backup JSON” num dispositivo e depois em “Importar JSON” no outro. Se duas pessoas editarem cópias diferentes, será preciso escolher qual arquivo importar; não existe sincronização automática entre dispositivos sem um serviço compartilhado.</p>
+      <p class="hint">No iPhone, o comportamento de armazenamento de arquivos HTML locais pode variar conforme o app usado para abri-los. Faça backups JSON regulares, especialmente antes de limpar dados do navegador.</p>
+    </details>
+  </section>
+</main>
+<script src="app.js" defer></script>
+</body>
+</html>
