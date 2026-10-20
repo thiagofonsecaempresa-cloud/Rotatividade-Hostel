@@ -4,8 +4,111 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#173f35">
-<title>Rotatividade do Hostel</title>
-<link rel="stylesheet" href="styles.css">
+<title>Rotatividade do Hostel v5</title>
+<style>
+:root{--green:#173f35;--green2:#dcebe4;--paper:#f7f8f5;--ink:#17211d;--muted:#65716b;--line:#d7ded9;--blue:#e7f1f8;--orange:#fff0dc;--red:#fbe6e4;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{background:var(--green);color:#fff;padding:20px max(16px,env(safe-area-inset-left));}
+header h1{font-size:clamp(22px,4vw,30px);margin:0 0 4px}header p{margin:0;color:#e1eee8;font-size:14px}
+main{max-width:1500px;margin:auto;padding:16px}
+.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px;box-shadow:0 2px 8px #173f3508}
+.toolbar{display:flex;gap:10px;align-items:end;flex-wrap:wrap}.field{display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--muted)}
+input,select,button{font:inherit;border:1px solid #bdc9c2;border-radius:9px;padding:10px;background:white;color:var(--ink)}
+button{cursor:pointer;font-weight:650}button.primary{background:var(--green);color:white;border-color:var(--green)}button.soft{background:var(--green2);border-color:var(--green2)}button.danger{color:#8b2520}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.hint{color:var(--muted);font-size:13px;margin:9px 0 0}
+.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.tag{border-radius:7px;padding:5px 9px;font-size:12px;font-weight:700;border:1px solid var(--line)}
+.tag.l{background:var(--green2)}.tag.ls{background:var(--orange)}.tag.x{background:#e9edf0}.tag.blank{background:white}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px}
+.metric{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px}.metric .label{font-size:12px;color:var(--muted)}.metric strong{display:block;font-size:25px;margin-top:4px}
+.tablewrap{overflow:auto;max-height:68vh;border:1px solid var(--line);border-radius:10px;background:#fff}
+table{border-collapse:separate;border-spacing:0;white-space:nowrap;font-size:12px;width:max-content;min-width:100%}
+th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center;padding:0}
+thead th{position:sticky;top:0;background:#edf1ee;z-index:3;height:34px;min-width:42px}
+th:first-child,td:first-child{position:sticky;left:0;z-index:2;background:#f3f6f3;text-align:left;min-width:64px;padding:6px 8px}
+th:nth-child(2),td:nth-child(2){position:sticky;left:64px;z-index:2;background:#f3f6f3;text-align:left;min-width:110px;padding:6px 8px}
+thead th:first-child,thead th:nth-child(2){z-index:4;background:#e5ebe6}
+td.status{min-width:42px;height:39px}
+td.status select{width:100%;min-width:42px;height:39px;border:0;border-radius:0;padding:0;text-align:center;font-weight:800;font-size:12px;appearance:none;background:transparent}
+td.status:has(option[value="L"]:checked){background:var(--green2)}
+td.status:has(option[value="LS"]:checked){background:var(--orange)}
+td.status:has(option[value="X"]:checked){background:#e9edf0}
+td.status select:focus{outline:2px solid #397b65;outline-offset:-2px}
+tfoot td{padding:7px;background:#f4f6f4;font-weight:700}
+.small{font-size:12px;color:var(--muted)}
+details summary{cursor:pointer;font-weight:700}
+
+.room-map{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-top:12px}
+.room-tile{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
+.room-tile-head{background:#edf1ee;padding:9px 11px;font-weight:800;display:flex;justify-content:space-between;align-items:center}
+.room-kind{font-size:11px;color:var(--muted);font-weight:650}
+.room-beds{padding:9px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.bed-chip{background:var(--green2);border:1px solid #c7ddd2;border-radius:8px;padding:8px 5px;text-align:center;font-size:12px;font-weight:700}
+.bed-chip.single{background:var(--orange);border-color:#f0ddc2}
+.bed-chip.extra{background:#e9edf0;border-color:#d7ded9}
+.map-key{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+@media(max-width:700px){.room-map{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.room-beds{gap:5px}.bed-chip{font-size:11px;padding:7px 3px}}
+
+@media(max-width:700px){main{padding:10px}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.panel{padding:11px}.tablewrap{max-height:62vh}button{padding:10px 12px}.toolbar>*{flex:1 1 135px}}
+@page{size:A4 landscape;margin:10mm}
+@media print{
+  :root{--line:#cbd5cf;--ink:#17211d;--green:#173f35;--green2:#dcebe4;--orange:#fff0dc}
+  body{background:#fff!important;color:#17211d;font-size:10px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  header{background:#173f35!important;color:#fff!important;padding:12px 14px;margin-bottom:8px;print-color-adjust:exact}
+  header h1{font-size:20px;margin:0 0 3px}header p{color:#e1eee8!important;font-size:10px}
+  main{padding:0;max-width:none}
+  .panel{box-shadow:none;border:0;border-radius:0;padding:5px 0;margin:0 0 8px;break-inside:avoid}
+  body>*{visibility:visible}
+  body>header,body>main{display:block}
+  main>.panel:not(.print-panel):not(.pdf-summary){display:none!important}
+  main>.print-panel{display:block!important}
+  .pdf-summary{display:block!important;break-before:page}
+  .pdf-summary .cards{grid-template-columns:repeat(4,1fr);gap:6px}
+  .pdf-summary .metric{padding:7px;border-radius:6px;background:#f2f5f2!important}
+  .pdf-summary .metric strong{font-size:16px;margin-top:1px}
+  .pdf-summary .metric .label{font-size:9px}
+  .pdf-summary .hint{font-size:9px}
+  .tablewrap{max-height:none!important;overflow:visible!important;border:0!important;border-radius:0!important}
+  table{font-size:7.2px;width:100%;min-width:0!important;white-space:normal;border-collapse:collapse;table-layout:auto}
+  th,td{border:1px solid #cbd5cf!important;min-width:0!important;padding:2px 3px!important;height:auto!important}
+  thead th{position:static!important;background:#e8eee9!important;color:#17211d;font-size:7px;height:auto!important}
+  th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){position:static!important;background:#f3f6f3!important;text-align:left;min-width:0!important;padding:3px!important}
+  td.status select{display:none!important}
+  td.status:after{content:attr(data-print);font-weight:800;display:block;min-height:10px}
+  td.status:has(option[value="L"]:checked){background:#dcebe4!important}
+  td.status:has(option[value="LS"]:checked){background:#fff0dc!important}
+  td.status:has(option[value="X"]:checked){background:#e9edf0!important}
+  .no-print,.toolbar,.hint.no-print{display:none!important}
+  #daily{font-size:9px}
+  #daily th,#daily td{padding:4px 6px!important}
+  h2{font-size:14px!important;margin:0 0 5px!important}
+  .print-title{display:block!important;font-size:14px!important;margin:0 0 5px!important}
+  .pdf-meta{display:block!important;font-size:9px;color:#52635a;margin:0 0 6px}
+  tr{break-inside:avoid}
+}
+.pdf-meta{display:none}.print-title{display:none}
+
+.day-field{margin:12px 0;max-width:260px;font-size:14px;font-weight:700}.day-field select{font-size:17px;min-height:48px;width:100%;background:#f7faf8}.day-entry-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.entry-room-title{grid-column:1/-1;margin:14px 0 0;padding:8px 10px;background:#edf1ee;border-radius:8px;font-size:15px}.entry-row{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;gap:8px;justify-content:space-between;align-items:center;min-width:0}.entry-bed{font-weight:750;font-size:14px;min-width:0}.entry-bed small{display:block;color:var(--muted);font-size:11px;font-weight:500}.entry-status{display:flex;flex-direction:column;gap:3px;min-width:125px;color:var(--muted);font-size:11px}.entry-status select{width:100%;min-height:42px;font-weight:750;font-size:13px;padding:7px;background:#fff}.print-panel{scroll-margin-top:10px}
+@media(max-width:700px){.day-entry-list{grid-template-columns:1fr}.entry-row{padding:9px 10px}.entry-status{min-width:145px}.day-field{max-width:none}}
+
+
+/* v5: fluxo diário mais evidente e proteção contra limpeza acidental */
+#dailyEntryPanel{border:2px solid #b7d6c8;background:#fbfdfb;scroll-margin-top:12px}
+#dailyEntryPanel h2{font-size:21px!important}
+#entryDay{min-height:52px;font-size:18px;font-weight:750;border:2px solid #8fb9a5}
+.day-entry-list{grid-template-columns:1fr!important;gap:8px}
+.entry-room{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff}
+.entry-room>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px;background:#edf4ef;font-size:16px;font-weight:800;cursor:pointer;list-style:none}
+.entry-room>summary::-webkit-details-marker{display:none}
+.entry-room>summary:after{content:'＋';font-size:20px;color:var(--green)}
+.entry-room[open]>summary:after{content:'−'}
+.entry-room>summary small{font-size:12px;font-weight:650;color:var(--muted);text-align:right}
+.entry-room-content{padding:8px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.maintenance-panel{margin-top:26px;border:1px dashed #d99b96;background:#fffafa}
+.maintenance-panel summary{color:#8b2520;padding:8px 0}
+button.danger{background:#fff0ef;border:1px solid #d99b96;color:#8b2520;margin:8px 0 2px}
+@media(max-width:700px){.entry-room-content{grid-template-columns:1fr}.entry-room>summary{padding:13px}.entry-room>summary small{max-width:45%}}
+
+</style>
 </head>
 <body>
 <header>
@@ -25,7 +128,6 @@
         <input id="responsible" type="text" placeholder="Quem está preenchendo">
       </label>
       <button class="primary" id="saveBtn">Salvar neste dispositivo</button>
-      <button class="soft" id="clearMonth">Limpar mês</button>
     </div>
     <div class="legend">
       <span class="tag blank">Em branco = pendente / sem marcação</span>
@@ -40,7 +142,7 @@
 
   <section class="panel no-print" id="dailyEntryPanel">
     <h2 style="font-size:19px;margin:0 0 6px">Lançamento por dia</h2>
-    <p class="hint" style="margin-top:0">Escolha o dia e marque cada cama. As alterações aparecem automaticamente na grade mensal logo abaixo.</p>
+    <p class="hint" style="margin-top:0">1. Escolha o dia. 2. Toque no quarto para abrir as camas. 3. Selecione L, LS, X ou Em branco. O registro é salvo automaticamente e aparece na grade mensal.</p>
     <label class="field day-field">Dia do mês
       <select id="entryDay" aria-label="Escolha o dia do mês"></select>
     </label>
@@ -121,6 +223,14 @@
     <p class="hint">“Enxoval de casal” significa uma troca registrada numa cama de casal. “Cama de solteiro” conta camas individuais trocadas; quartos compartilhados não são multiplicados como se cada cama usasse o conjunto completo de 17 peças.</p>
   </section>
 
+  <section class="panel no-print maintenance-panel">
+    <details>
+      <summary>⚠️ Área de manutenção e ações permanentes</summary>
+      <p class="hint">Atenção: limpar o mês apaga as marcações da unidade e do mês atualmente selecionados neste navegador. Faça um backup JSON antes.</p>
+      <button class="danger" id="clearMonth">Limpar todos os lançamentos deste mês</button>
+    </details>
+  </section>
+
   <section class="panel no-print">
     <details>
       <summary>Como usar no GitHub Pages e entre celular e notebook</summary>
@@ -129,6 +239,118 @@
     </details>
   </section>
 </main>
-<script src="app.js" defer></script>
+<script>
+// Rotatividade do Hostel: lógica principal separada para facilitar manutenção.
+(function(){
+const $=id=>document.getElementById(id);
+const beds=[
+ {room:"1",bed:"Casal",type:"casal"},{room:"2",bed:"Casal",type:"casal"},{room:"3",bed:"Casal",type:"casal"},
+ {room:"4",bed:"Casal",type:"casal"},{room:"5",bed:"Casal",type:"casal"},
+ {room:"9",bed:"Casal",type:"casal"},{room:"9",bed:"Extra solteiro",type:"solteiro"},
+ {room:"10",bed:"Casal",type:"casal"},{room:"11",bed:"Casal",type:"casal"},{room:"12",bed:"Casal",type:"casal"},
+ {room:"13",bed:"Casal",type:"casal"},{room:"14",bed:"Casal",type:"casal"},{room:"15",bed:"Casal",type:"casal"},
+ {room:"16",bed:"Casal",type:"casal"},{room:"6",bed:"Solteiro",type:"solteiro"},
+ {room:"17",bed:"Solteiro",type:"solteiro"},
+ {room:"7",bed:"Solteiro 1",type:"solteiro"},{room:"7",bed:"Solteiro 2",type:"solteiro"},{room:"7",bed:"Solteiro 3",type:"solteiro"},{room:"7",bed:"Solteiro 4",type:"solteiro"},
+ {room:"8",bed:"Solteiro 1",type:"solteiro"},{room:"8",bed:"Solteiro 2",type:"solteiro"},{room:"8",bed:"Solteiro 3",type:"solteiro"},{room:"8",bed:"Solteiro 4",type:"solteiro"}
+];
+
+const octoberSeedRows = [["L","L","L","X","L","X","LS","L","L","L","L","L","L","X","X","L","X","L"],["L","L","X","L","X","X","L","L","L","X","L","L","L","X","L","L","X","L"],["L","X","L","L","L","X","LS","L","L","L","L","X","L","X","L","L","L","L"],["X","LS","X","X","L","X","L","X","L","X","X","L","X","X","X","L","X","X"],["L","L","X","L","L","X","L","X","L","L","L","L","L","L","L","L","L","L"],["X","L","X","X","X","L","X","X","L","X","X","X","X","X","X","L","X","X"],["X","L","L","L","X","X","L","X","L","X","L","X","X","X","L","X","X","L"],["L","X","L","LS","L","X","L","L","X","L","X","L","X","L","X","L","X","X"],["L","X","L","LS","X","X","X","L","X","L","X","L","X","L","X","L","X","X"],["L","X","L","X","X","X","X","L","X","L","X","X","X","L","X","L","X","X"],["L","X","L","X","X","X","X","X","X","L","X","X","X","L","X","X","X","X"],["X","X","L","X","LS","X","L","X","L","X","L","L","L","X","LS","L","X","L"],["X","X","L","X","X","X","L","X","L","X","L","L","L","X","LS","L","X","X"],["X","X","X","X","L","X","L","X","X","L","X","X","L","X","LS","X","X","X"],["L","L","L","L","L","X","L","X","L","X","L","L","LS","L","X","X","L","L"],["X","X","X","X","X","X","L","X","X","X","X","X","L","X","LS","X","X","X"],["X","X","X","X","L","X","L","X","X","X","L","X","LS","L","X","X","X","X"],["X","L","L","L","X","LS","L","L","X","X","X","L","L","X","LS","L","L","L"],["X","L","L","L","L","X","L","L","L","L","X","L","L","X","LS","L","X","X"],["X","L","L","L","L","X","L","L","L","X","L","L","L","X","L","X","L","L"],["LS","L","L","L","L","L","L","L","L","L","L","L","L","L","L","X","L","L"],["X","L","L","X","L","L","L","L","L","X","L","X","L","L","L","L","L","L"],["L","L","L","X","X","X","L","X","L","X","X","L","L","X","LS","L","X","X"],["X","L","X","X","X","X","X","L","L","L","X","X","X","X","X","L","X","X"]];
+
+let data={};
+const key=()=>`hostel-rotatividade-${$('unit').value}-${$('month').value}`;
+function blankMonth(){return {responsible:"",cells:{}}}
+function load(){
+ try {
+   const saved=localStorage.getItem(key());
+   if(saved) data=JSON.parse(saved);
+   else data=blankMonth();
+   if($('unit').value==="SR" && $('month').value==="2026-10" && (!data.cells || Object.keys(data.cells).length===0)){
+     data=blankMonth();
+     octoberSeedRows.forEach((row,i)=>row.forEach((v,j)=>{if(v)data.cells[`${i}|${j+1}`]=v}));
+     data.prefilledFromPhoto=true;
+     localStorage.setItem(key(),JSON.stringify(data));
+   }
+ } catch(e){data=blankMonth()}
+ $('responsible').value=data.responsible||"";
+ render()
+}
+function persist(show){data.responsible=$('responsible').value;try{localStorage.setItem(key(),JSON.stringify(data));if(show)alert("Salvo neste dispositivo.")}catch(e){if(show)alert("Não foi possível salvar automaticamente neste navegador. Faça um Backup JSON.")}}
+function days(){const [y,m]=$('month').value.split('-').map(Number);return new Date(y,m,0).getDate()}
+function status(row,d){return data.cells[`${row}|${d}`]||""}
+function setStatus(row,d,v){if(v)data.cells[`${row}|${d}`]=v;else delete data.cells[`${row}|${d}`];persist(false);updateMetrics();updateDaily();updateDayEntry()}
+function changed(v){return v==="L"||v==="LS"}
+function render(){
+ const n=days();populateEntryDays();$('gridTitle').textContent=`Unidade ${$('unit').value} • Grade de ${$('month').value}`;const [py,pm]=$('month').value.split('-').map(Number);$('printTitle').textContent=`Rotatividade do Hostel • Unidade ${$('unit').value} • ${new Date(py,pm-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}`;
+ let html='<thead><tr><th>Quarto</th><th>Cama</th>';
+ for(let d=1;d<=n;d++)html+=`<th>${d}</th>`;
+ html+='</tr></thead><tbody>';
+ beds.forEach((b,i)=>{html+=`<tr><td>${b.room}</td><td>${b.bed}</td>`;
+ for(let d=1;d<=n;d++){const v=status(i,d);html+=`<td class="status" data-print="${v||'·'}"><select aria-label="Quarto ${b.room}, ${b.bed}, dia ${d}" data-row="${i}" data-day="${d}">
+ <option value="" ${v===""?"selected":""}>·</option><option value="L" ${v==="L"?"selected":""}>L</option><option value="LS" ${v==="LS"?"selected":""}>LS</option><option value="X" ${v==="X"?"selected":""}>X</option></select></td>`}
+ html+='</tr>'});
+ html+='</tbody>';
+ $('grid').innerHTML=html;
+ $('grid').querySelectorAll('select').forEach(sel=>sel.addEventListener('change',e=>{const s=e.target;setStatus(+s.dataset.row,+s.dataset.day,s.value);s.closest('td').dataset.print=s.value||'·';updateAll()}));
+ updateAll();updateDayEntry();
+}
+function populateEntryDays(){const sel=$('entryDay');const n=days();const old=Number(sel.value)||1;sel.innerHTML=Array.from({length:n},(_,i)=>`<option value="${i+1}">Dia ${String(i+1).padStart(2,'0')}</option>`).join('');sel.value=String(Math.min(old,n));}
+function updateDayEntry(){
+ const holder=$('dayEntryList');if(!holder)return;
+ const d=Number($('entryDay').value)||1;
+ const rooms=[];
+ beds.forEach((b,i)=>{let r=rooms.find(x=>x.room===b.room);if(!r){r={room:b.room,beds:[]};rooms.push(r)}r.beds.push({b,i})});
+ let h='';
+ rooms.forEach(r=>{
+   const marked=r.beds.filter(x=>status(x.i,d)!=='').length;
+   h+=`<details class="entry-room"><summary><span>Quarto ${r.room}</span><small>${marked}/${r.beds.length} camas marcadas</small></summary><div class="entry-room-content">`;
+   r.beds.forEach(({b,i})=>{const v=status(i,d);h+=`<div class="entry-row"><span class="entry-bed">${b.bed}<small>${b.type==='casal'?'Cama de casal':'Cama de solteiro'}</small></span><label class="entry-status"><span>Marcação</span><select aria-label="Quarto ${b.room}, ${b.bed}, dia ${d}" data-entry-row="${i}" data-entry-day="${d}"><option value="" ${v===''?'selected':''}>Em branco</option><option value="L" ${v==='L'?'selected':''}>L · troca realizada</option><option value="LS" ${v==='LS'?'selected':''}>LS · troca realizada</option><option value="X" ${v==='X'?'selected':''}>X · sem troca</option></select></label></div>`});
+   h+='</div></details>';
+ });
+ holder.innerHTML=h;
+ holder.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',e=>{const el=e.target;setStatus(Number(el.dataset.entryRow),Number(el.dataset.entryDay),el.value);const gridSel=$('grid').querySelector(`select[data-row="${el.dataset.entryRow}"][data-day="${el.dataset.entryDay}"]`);if(gridSel){gridSel.value=el.value;gridSel.closest('td').dataset.print=el.value||'·';}const details=el.closest('details.entry-room');if(details){const selects=details.querySelectorAll('select');const marked=[...selects].filter(s=>s.value!=='').length;details.querySelector('summary small').textContent=`${marked}/${selects.length} camas marcadas`;} }));
+}
+function totalsForDay(d){
+ let couple=0,single=0,ls=0,l=0,pending=0;
+ beds.forEach((b,i)=>{let v=status(i,d);if(changed(v)){if(b.type==="casal")couple++;else single++;if(v==="LS")ls++;else l++}else if(v==="")pending++});
+ return {couple,single,total:couple+single,ls,l,pending}
+}
+function updateMetrics(){
+ let total=0,c=0,s=0,peak=0,peakDay="—";
+ for(let d=1;d<=days();d++){const t=totalsForDay(d);total+=t.total;c+=t.couple;s+=t.single;if(t.total>peak){peak=t.total;peakDay=String(d).padStart(2,"0")}}
+ $('mTotal').textContent=total;$('mCouple').textContent=c;$('mSingle').textContent=s;$('mPeak').textContent=peak?`${peak} (dia ${peakDay})`:"—";
+ $('summaryNote').textContent=`Total de marcações L/LS no mês: ${total}. Média por dia do mês: ${(total/days()).toFixed(1).replace(".",",")}.`;
+}
+function updateDaily(){
+ let h='<thead><tr><th>Dia</th><th>Casal</th><th>Solteiro</th><th>Total trocas</th><th>L</th><th>LS</th><th>Em branco</th></tr></thead><tbody>';
+ for(let d=1;d<=days();d++){const t=totalsForDay(d);h+=`<tr><td>${String(d).padStart(2,"0")}</td><td>${t.couple}</td><td>${t.single}</td><td><b>${t.total}</b></td><td>${t.l}</td><td>${t.ls}</td><td>${t.pending}</td></tr>`}
+ h+='</tbody>';$('daily').innerHTML=h;
+}
+function updateAll(){updateMetrics();updateDaily()}
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200)}
+function csv(){
+ const n=days();let rows=[["Quarto","Cama",...Array.from({length:n},(_,i)=>String(i+1))]];
+ beds.forEach((b,i)=>rows.push([b.room,b.bed,...Array.from({length:n},(_,j)=>status(i,j+1))]));
+ rows.push([]);rows.push(["Resumo diário"]);rows.push(["Dia","Trocas casal","Trocas solteiro","Total","L","LS","Em branco"]);
+ for(let d=1;d<=n;d++){const t=totalsForDay(d);rows.push([d,t.couple,t.single,t.total,t.l,t.ls,t.pending])}
+ const text=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
+ download(`rotatividade_hostel_${$('unit').value}_${$('month').value}.csv`,"\ufeff"+text,"text/csv;charset=utf-8");
+}
+function jsonBackup(){data.responsible=$('responsible').value;download(`backup_rotatividade_${$('unit').value}_${$('month').value}.json`,JSON.stringify({app:"Rotatividade do Hostel",version:1,unit:$('unit').value,month:$('month').value,data},null,2),"application/json")}
+$('month').addEventListener('change',load);
+$('entryDay').addEventListener('change',updateDayEntry);
+$('unit').addEventListener('change',load);
+$('responsible').addEventListener('change',()=>persist(false));
+$('saveBtn').addEventListener('click',()=>persist(true));
+$('clearMonth').addEventListener('click',()=>{if(confirm("ATENÇÃO: apagar todas as marcações da unidade e do mês selecionados neste dispositivo? Esta ação não pode ser desfeita. Faça backup JSON antes.")){data=blankMonth();persist(false);render()}});
+$('csvBtn').addEventListener('click',csv);
+$('jsonBtn').addEventListener('click',jsonBackup);
+$('importBtn').addEventListener('click',()=>$('jsonFile').click());
+$('jsonFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj.data||!obj.month)throw new Error();$('month').value=obj.month;if(obj.unit && ['SR','MK'].includes(obj.unit))$('unit').value=obj.unit;data=obj.data;persist(false);load();alert("Backup importado. Os dados deste mês foram carregados neste dispositivo.")}catch(err){alert("Esse arquivo não parece ser um backup válido deste sistema.")}e.target.value=""});
+$('printBtn').addEventListener('click',()=>{persist(false);window.print()});
+load();
+})();
+
+</script>
 </body>
 </html>
