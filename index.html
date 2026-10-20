@@ -87,7 +87,7 @@ details summary{cursor:pointer;font-weight:700}
 }
 .pdf-meta{display:none}.print-title{display:none}
 
-.day-field{margin:12px 0;max-width:260px;font-size:14px;font-weight:700}.day-field select{font-size:17px;min-height:48px;width:100%;background:#f7faf8}.day-entry-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.entry-room-title{grid-column:1/-1;margin:14px 0 0;padding:8px 10px;background:#edf1ee;border-radius:8px;font-size:15px}.entry-row{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;gap:8px;justify-content:space-between;align-items:center;min-width:0}.entry-bed{font-weight:750;font-size:14px;min-width:0}.entry-bed small{display:block;color:var(--muted);font-size:11px;font-weight:500}.entry-status{display:flex;flex-direction:column;gap:3px;min-width:125px;color:var(--muted);font-size:11px}.entry-status select{width:100%;min-height:42px;font-weight:750;font-size:13px;padding:7px;background:#fff}.print-panel{scroll-margin-top:10px}
+.day-field{margin:12px 0;max-width:260px;font-size:14px;font-weight:700}.day-field select{font-size:17px;min-height:48px;width:100%;background:#f7faf8}.day-entry-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.entry-room-title{grid-column:1/-1;margin:14px 0 0;padding:8px 10px;background:#edf1ee;border-radius:8px;font-size:15px}.entry-row{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;grid-template-columns:minmax(90px,1fr) minmax(120px,1fr) minmax(145px,1.2fr);gap:8px;align-items:center;min-width:0}.entry-bed{font-weight:750;font-size:14px;min-width:0}.entry-bed small{display:block;color:var(--muted);font-size:11px;font-weight:500}.entry-status,.entry-cleaner{display:flex;flex-direction:column;gap:3px;min-width:0;color:var(--muted);font-size:11px}.entry-status select,.entry-cleaner select{width:100%;min-height:42px;font-weight:750;font-size:13px;padding:7px;background:#fff}.print-panel{scroll-margin-top:10px}
 @media(max-width:700px){.day-entry-list{grid-template-columns:1fr}.entry-row{padding:9px 10px}.entry-status{min-width:145px}.day-field{max-width:none}}
 
 
@@ -106,7 +106,7 @@ details summary{cursor:pointer;font-weight:700}
 .maintenance-panel{margin-top:26px;border:1px dashed #d99b96;background:#fffafa}
 .maintenance-panel summary{color:#8b2520;padding:8px 0}
 button.danger{background:#fff0ef;border:1px solid #d99b96;color:#8b2520;margin:8px 0 2px}
-@media(max-width:700px){.entry-room-content{grid-template-columns:1fr}.entry-room>summary{padding:13px}.entry-room>summary small{max-width:45%}}
+@media(max-width:700px){.entry-room-content{grid-template-columns:1fr}.entry-row{grid-template-columns:minmax(75px,.8fr) minmax(115px,1fr);}.entry-cleaner{grid-column:1/-1}.entry-room>summary{padding:13px}.entry-room>summary small{max-width:45%}}
 
 </style>
 </head>
@@ -264,7 +264,7 @@ const octoberSeedRows = [["L","L","L","X","L","X","LS","L","L","L","L","L","L","
 
 let data={};
 const key=()=>`hostel-rotatividade-${$('unit').value}-${$('month').value}`;
-function blankMonth(){return {responsible:"",cells:{}}}
+function blankMonth(){return {responsible:"",cells:{},cleaners:{}}}
 function load(){
  try {
    const saved=localStorage.getItem(key());
@@ -284,6 +284,8 @@ function persist(show){data.responsible=$('responsible').value;try{localStorage.
 function days(){const [y,m]=$('month').value.split('-').map(Number);return new Date(y,m,0).getDate()}
 function status(row,d){return data.cells[`${row}|${d}`]||""}
 function setStatus(row,d,v){if(v)data.cells[`${row}|${d}`]=v;else delete data.cells[`${row}|${d}`];persist(false);updateMetrics();updateDaily();updateDayEntry()}
+function cleaner(row,d){return (data.cleaners&&data.cleaners[`${row}|${d}`])||""}
+function setCleaner(row,d,v){if(!data.cleaners)data.cleaners={};if(v)data.cleaners[`${row}|${d}`]=v;else delete data.cleaners[`${row}|${d}`];persist(false)}
 function changed(v){return v==="L"||v==="LS"}
 function render(){
  const n=days();populateEntryDays();$('gridTitle').textContent=`Unidade ${$('unit').value} • Grade de ${$('month').value}`;const [py,pm]=$('month').value.split('-').map(Number);$('printTitle').textContent=`Rotatividade do Hostel • Unidade ${$('unit').value} • ${new Date(py,pm-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}`;
@@ -309,11 +311,12 @@ function updateDayEntry(){
  rooms.forEach(r=>{
    const marked=r.beds.filter(x=>status(x.i,d)!=='').length;
    h+=`<details class="entry-room"><summary><span>Quarto ${r.room}</span><small>${marked}/${r.beds.length} camas marcadas</small></summary><div class="entry-room-content">`;
-   r.beds.forEach(({b,i})=>{const v=status(i,d);h+=`<div class="entry-row"><span class="entry-bed">${b.bed}<small>${b.type==='casal'?'Cama de casal':'Cama de solteiro'}</small></span><label class="entry-status"><span>Marcação</span><select aria-label="Quarto ${b.room}, ${b.bed}, dia ${d}" data-entry-row="${i}" data-entry-day="${d}"><option value="" ${v===''?'selected':''}>Em branco</option><option value="L" ${v==='L'?'selected':''}>L · troca realizada</option><option value="LS" ${v==='LS'?'selected':''}>LS · troca realizada</option><option value="X" ${v==='X'?'selected':''}>X · sem troca</option></select></label></div>`});
+   r.beds.forEach(({b,i})=>{const v=status(i,d);const who=cleaner(i,d);h+=`<div class="entry-row"><span class="entry-bed">${b.bed}<small>${b.type==='casal'?'Cama de casal':'Cama de solteiro'}</small></span><label class="entry-status"><span>Marcação</span><select aria-label="Quarto ${b.room}, ${b.bed}, dia ${d}" data-entry-row="${i}" data-entry-day="${d}"><option value="" ${v===''?'selected':''}>Em branco</option><option value="L" ${v==='L'?'selected':''}>L · troca realizada</option><option value="LS" ${v==='LS'?'selected':''}>LS · troca realizada</option><option value="X" ${v==='X'?'selected':''}>X · sem troca</option></select></label><label class="entry-cleaner"><span>Limpeza feita por:</span><select aria-label="Limpeza feita por, quarto ${b.room}, ${b.bed}, dia ${d}" data-cleaner-row="${i}" data-cleaner-day="${d}"><option value="" ${who===''?'selected':''}>Selecione...</option><option value="Sheila" ${who==='Sheila'?'selected':''}>Sheila</option><option value="Mônica" ${who==='Mônica'?'selected':''}>Mônica</option><option value="Dayane" ${who==='Dayane'?'selected':''}>Dayane</option><option value="Não informado" ${who==='Não informado'?'selected':''}>Não informado</option></select></label></div>`});
    h+='</div></details>';
  });
  holder.innerHTML=h;
- holder.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',e=>{const el=e.target;setStatus(Number(el.dataset.entryRow),Number(el.dataset.entryDay),el.value);const gridSel=$('grid').querySelector(`select[data-row="${el.dataset.entryRow}"][data-day="${el.dataset.entryDay}"]`);if(gridSel){gridSel.value=el.value;gridSel.closest('td').dataset.print=el.value||'·';}const details=el.closest('details.entry-room');if(details){const selects=details.querySelectorAll('select');const marked=[...selects].filter(s=>s.value!=='').length;details.querySelector('summary small').textContent=`${marked}/${selects.length} camas marcadas`;} }));
+ holder.querySelectorAll('select[data-entry-row]').forEach(sel=>sel.addEventListener('change',e=>{const el=e.target;setStatus(Number(el.dataset.entryRow),Number(el.dataset.entryDay),el.value);const gridSel=$('grid').querySelector(`select[data-row="${el.dataset.entryRow}"][data-day="${el.dataset.entryDay}"]`);if(gridSel){gridSel.value=el.value;gridSel.closest('td').dataset.print=el.value||'·';}const details=el.closest('details.entry-room');if(details){const selects=details.querySelectorAll('select[data-entry-row]');const marked=[...selects].filter(s=>s.value!=='').length;details.querySelector('summary small').textContent=`${marked}/${selects.length} camas marcadas`;} }));
+ holder.querySelectorAll('select[data-cleaner-row]').forEach(sel=>sel.addEventListener('change',e=>{const el=e.target;setCleaner(Number(el.dataset.cleanerRow),Number(el.dataset.cleanerDay),el.value)}));
 }
 function totalsForDay(d){
  let couple=0,single=0,ls=0,l=0,pending=0;
@@ -336,12 +339,14 @@ function download(name,content,type){const blob=new Blob([content],{type});const
 function csv(){
  const n=days();let rows=[["Quarto","Cama",...Array.from({length:n},(_,i)=>String(i+1))]];
  beds.forEach((b,i)=>rows.push([b.room,b.bed,...Array.from({length:n},(_,j)=>status(i,j+1))]));
+ rows.push([]);rows.push(["Responsável pela limpeza"]);rows.push(["Quarto","Cama",...Array.from({length:n},(_,i)=>String(i+1))]);
+ beds.forEach((b,i)=>rows.push([b.room,b.bed,...Array.from({length:n},(_,j)=>cleaner(i,j+1))]));
  rows.push([]);rows.push(["Resumo diário"]);rows.push(["Dia","Trocas casal","Trocas solteiro","Total","L","LS","Em branco"]);
  for(let d=1;d<=n;d++){const t=totalsForDay(d);rows.push([d,t.couple,t.single,t.total,t.l,t.ls,t.pending])}
  const text=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
  download(`rotatividade_hostel_${$('unit').value}_${$('month').value}.csv`,"\ufeff"+text,"text/csv;charset=utf-8");
 }
-function jsonBackup(){data.responsible=$('responsible').value;download(`backup_rotatividade_${$('unit').value}_${$('month').value}.json`,JSON.stringify({app:"Rotatividade do Hostel",version:1,unit:$('unit').value,month:$('month').value,data},null,2),"application/json")}
+function jsonBackup(){data.responsible=$('responsible').value;download(`backup_rotatividade_${$('unit').value}_${$('month').value}.json`,JSON.stringify({app:"Rotatividade do Hostel",version:2,unit:$('unit').value,month:$('month').value,data},null,2),"application/json")}
 $('month').addEventListener('change',load);
 $('entryDay').addEventListener('change',updateDayEntry);
 $('unit').addEventListener('change',load);

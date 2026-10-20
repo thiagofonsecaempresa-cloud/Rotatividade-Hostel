@@ -1,11 +1,7 @@
-# Rotatividade do Hostel
+# Rotatividade do Hostel — versão 6
 
-Aplicativo estático para GitHub Pages. Envie `index.html`, `styles.css`, `app.js` e `README.md` para a raiz do repositório e habilite Pages na branch principal / raiz.
+1. Faça backup JSON dos registros atuais antes de atualizar.
+2. Substitua o `index.html` antigo por este arquivo na raiz do repositório GitHub Pages.
+3. Faça commit e recarregue o site.
 
-## Uso
-1. Escolha unidade e mês.
-2. Em **Lançamento por dia**, selecione o dia e marque cada cama. As mudanças aparecem automaticamente na grade mensal.
-3. Também é possível editar diretamente as células da grade.
-4. Use Exportar CSV para abrir os dados no Excel, Backup JSON para salvar/transferir registros, Importar JSON para restaurar, ou Exportar PDF para gerar um relatório visual em A4 paisagem, com grade mensal e resumo diário.
-
-Os dados ficam no armazenamento local do navegador. GitHub Pages hospeda a página, mas não sincroniza dispositivos. Faça backups JSON regularmente.
+Esta versão adiciona o campo “Limpeza feita por” por cama e por dia, com as opções Sheila, Mônica, Dayane e Não informado. Os registros históricos de outubro de 2026 até o dia 18 recebem “Não informado” quando ainda não há um responsável salvo. O nome do responsável é incluído também na exportação CSV e no backup JSON.
