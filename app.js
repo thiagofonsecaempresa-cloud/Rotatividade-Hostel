@@ -36,10 +36,10 @@ function load(){
 function persist(show){data.responsible=$('responsible').value;try{localStorage.setItem(key(),JSON.stringify(data));if(show)alert("Salvo neste dispositivo.")}catch(e){if(show)alert("Não foi possível salvar automaticamente neste navegador. Faça um Backup JSON.")}}
 function days(){const [y,m]=$('month').value.split('-').map(Number);return new Date(y,m,0).getDate()}
 function status(row,d){return data.cells[`${row}|${d}`]||""}
-function setStatus(row,d,v){if(v)data.cells[`${row}|${d}`]=v;else delete data.cells[`${row}|${d}`];persist(false);updateMetrics();updateDaily()}
+function setStatus(row,d,v){if(v)data.cells[`${row}|${d}`]=v;else delete data.cells[`${row}|${d}`];persist(false);updateMetrics();updateDaily();updateDayEntry()}
 function changed(v){return v==="L"||v==="LS"}
 function render(){
- const n=days();$('gridTitle').textContent=`Unidade ${$('unit').value} • Grade de ${$('month').value}`;
+ const n=days();populateEntryDays();$('gridTitle').textContent=`Unidade ${$('unit').value} • Grade de ${$('month').value}`;const [py,pm]=$('month').value.split('-').map(Number);$('printTitle').textContent=`Rotatividade do Hostel • Unidade ${$('unit').value} • ${new Date(py,pm-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})}`;
  let html='<thead><tr><th>Quarto</th><th>Cama</th>';
  for(let d=1;d<=n;d++)html+=`<th>${d}</th>`;
  html+='</tr></thead><tbody>';
@@ -50,8 +50,10 @@ function render(){
  html+='</tbody>';
  $('grid').innerHTML=html;
  $('grid').querySelectorAll('select').forEach(sel=>sel.addEventListener('change',e=>{const s=e.target;setStatus(+s.dataset.row,+s.dataset.day,s.value);s.closest('td').dataset.print=s.value||'·';updateAll()}));
- updateAll();
+ updateAll();updateDayEntry();
 }
+function populateEntryDays(){const sel=$('entryDay');const n=days();const old=Number(sel.value)||1;sel.innerHTML=Array.from({length:n},(_,i)=>`<option value="${i+1}">Dia ${String(i+1).padStart(2,'0')}</option>`).join('');sel.value=String(Math.min(old,n));}
+function updateDayEntry(){const holder=$('dayEntryList');if(!holder)return;const d=Number($('entryDay').value)||1;let h='';let lastRoom='';beds.forEach((b,i)=>{if(b.room!==lastRoom){h+=`<h3 class="entry-room-title">Quarto ${b.room}</h3>`;lastRoom=b.room;}const v=status(i,d);h+=`<div class="entry-row"><span class="entry-bed">${b.bed}<small>${b.type==='casal'?'Cama de casal':'Cama de solteiro'}</small></span><label class="entry-status"><span>Marcação</span><select aria-label="Quarto ${b.room}, ${b.bed}, dia ${d}" data-entry-row="${i}" data-entry-day="${d}"><option value="" ${v===''?'selected':''}>Em branco</option><option value="L" ${v==='L'?'selected':''}>L · troca realizada</option><option value="LS" ${v==='LS'?'selected':''}>LS · troca realizada</option><option value="X" ${v==='X'?'selected':''}>X · sem troca</option></select></label></div>`});holder.innerHTML=h;holder.querySelectorAll('select').forEach(sel=>sel.addEventListener('change',e=>{const el=e.target;setStatus(Number(el.dataset.entryRow),Number(el.dataset.entryDay),el.value);const gridSel=$('grid').querySelector(`select[data-row="${el.dataset.entryRow}"][data-day="${el.dataset.entryDay}"]`);if(gridSel){gridSel.value=el.value;gridSel.closest('td').dataset.print=el.value||'·';}}));}
 function totalsForDay(d){
  let couple=0,single=0,ls=0,l=0,pending=0;
  beds.forEach((b,i)=>{let v=status(i,d);if(changed(v)){if(b.type==="casal")couple++;else single++;if(v==="LS")ls++;else l++}else if(v==="")pending++});
@@ -80,6 +82,7 @@ function csv(){
 }
 function jsonBackup(){data.responsible=$('responsible').value;download(`backup_rotatividade_${$('unit').value}_${$('month').value}.json`,JSON.stringify({app:"Rotatividade do Hostel",version:1,unit:$('unit').value,month:$('month').value,data},null,2),"application/json")}
 $('month').addEventListener('change',load);
+$('entryDay').addEventListener('change',updateDayEntry);
 $('unit').addEventListener('change',load);
 $('responsible').addEventListener('change',()=>persist(false));
 $('saveBtn').addEventListener('click',()=>persist(true));
@@ -88,6 +91,6 @@ $('csvBtn').addEventListener('click',csv);
 $('jsonBtn').addEventListener('click',jsonBackup);
 $('importBtn').addEventListener('click',()=>$('jsonFile').click());
 $('jsonFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj.data||!obj.month)throw new Error();$('month').value=obj.month;if(obj.unit && ['SR','MK'].includes(obj.unit))$('unit').value=obj.unit;data=obj.data;persist(false);load();alert("Backup importado. Os dados deste mês foram carregados neste dispositivo.")}catch(err){alert("Esse arquivo não parece ser um backup válido deste sistema.")}e.target.value=""});
-$('printBtn').addEventListener('click',()=>window.print());
+$('printBtn').addEventListener('click',()=>{persist(false);window.print()});
 load();
 })();

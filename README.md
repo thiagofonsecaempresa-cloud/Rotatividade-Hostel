@@ -1,19 +1,11 @@
 # Rotatividade do Hostel
 
-Aplicativo estático para GitHub Pages. Não precisa de servidor, banco de dados ou bibliotecas externas.
+Aplicativo estático para GitHub Pages. Envie `index.html`, `styles.css`, `app.js` e `README.md` para a raiz do repositório e habilite Pages na branch principal / raiz.
 
-## Publicar
-1. Extraia o ZIP.
-2. No repositório GitHub, envie `index.html`, `styles.css` e `app.js` para a raiz do repositório.
-3. Em **Settings → Pages**, selecione **Deploy from a branch**, escolha a branch principal e a pasta `/(root)`.
-4. Abra o endereço `https://SEU-USUARIO.github.io/SEU-REPOSITORIO/` no Safari. Não abra o HTML pelo visualizador de arquivos do iPhone: esse visualizador pode bloquear JavaScript.
+## Uso
+1. Escolha unidade e mês.
+2. Em **Lançamento por dia**, selecione o dia e marque cada cama. As mudanças aparecem automaticamente na grade mensal.
+3. Também é possível editar diretamente as células da grade.
+4. Use Exportar CSV para abrir os dados no Excel, Backup JSON para salvar/transferir registros, Importar JSON para restaurar, ou Exportar PDF para gerar um relatório visual em A4 paisagem, com grade mensal e resumo diário.
 
-## Recursos
-- Grade mensal editável por cama e dia.
-- Seleção de unidade SR/MK e mês.
-- Registro L, LS, X ou em branco.
-- Resumos diários e mensais, exportação CSV, backup/importação JSON e impressão.
-- Outubro/2026 de SR contém um pré-preenchimento visual da planilha enviada anteriormente; revisar células pouco legíveis.
-
-## Dados
-Os dados são salvos no armazenamento local do navegador. GitHub Pages hospeda os arquivos, mas não sincroniza automaticamente os registros entre aparelhos. Use o backup JSON para transferir os dados.
+Os dados ficam no armazenamento local do navegador. GitHub Pages hospeda a página, mas não sincroniza dispositivos. Faça backups JSON regularmente.

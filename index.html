@@ -38,6 +38,33 @@
 
 
 
+  <section class="panel no-print" id="dailyEntryPanel">
+    <h2 style="font-size:19px;margin:0 0 6px">Lançamento por dia</h2>
+    <p class="hint" style="margin-top:0">Escolha o dia e marque cada cama. As alterações aparecem automaticamente na grade mensal logo abaixo.</p>
+    <label class="field day-field">Dia do mês
+      <select id="entryDay" aria-label="Escolha o dia do mês"></select>
+    </label>
+    <div id="dayEntryList" class="day-entry-list"></div>
+    <p class="hint">As marcações são salvas automaticamente neste navegador. L e LS contam como troca; X e em branco não contam.</p>
+  </section>
+
+  <section class="panel print-panel">
+    <div class="toolbar no-print" style="justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><strong id="gridTitle">Grade mensal</strong><div class="small">Unidade, quarto, cama e dias do mês. SR é a unidade principal; MK funciona separadamente.</div></div>
+      <div class="actions">
+        <button class="soft" id="csvBtn">Exportar CSV (Excel)</button>
+        <button class="soft" id="jsonBtn">Backup JSON</button>
+        <button class="soft" id="importBtn">Importar JSON</button>
+        <button class="primary" id="printBtn">Exportar PDF</button>
+        <input id="jsonFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <h2 id="printTitle" class="print-title">Rotatividade do Hostel</h2>
+    <div class="tablewrap"><table id="grid"></table></div>
+    <p class="hint no-print">Na unidade SR, outubro de 2026 foi pré-preenchido por leitura visual da foto enviada. Revise marcações rabiscadas ou pouco nítidas antes de usar os totais. Para gerar o relatório em PDF, use o botão “Exportar PDF”. A exportação CSV abre no Excel; o backup JSON guarda os lançamentos para continuar em outro dispositivo.</p>
+  </section>
+
+
   <section class="panel no-print" id="visualRoomMap">
     <h2 style="font-size:17px;margin:0 0 4px">Mapa visual dos quartos e camas</h2>
     <p class="hint" style="margin-top:0">Cada cartão representa um quarto; cada etiqueta representa uma cama que tem sua própria linha na grade mensal.</p>
@@ -76,22 +103,9 @@
     <p class="hint">Total cadastrado: 13 camas de casal e 11 camas de solteiro, incluindo a cama extra do quarto 9. Na grade abaixo, cada cama aparece em uma linha e cada dia em uma coluna.</p>
   </section>
 
-  <section class="panel print-panel">
-    <div class="toolbar no-print" style="justify-content:space-between;align-items:center;margin-bottom:10px">
-      <div><strong id="gridTitle">Grade mensal</strong><div class="small">Unidade, quarto, cama e dias do mês. SR é a unidade principal; MK funciona separadamente.</div></div>
-      <div class="actions">
-        <button class="soft" id="csvBtn">Exportar CSV (Excel)</button>
-        <button class="soft" id="jsonBtn">Backup JSON</button>
-        <button class="soft" id="importBtn">Importar JSON</button>
-        <button class="soft" id="printBtn">Imprimir / salvar PDF</button>
-        <input id="jsonFile" type="file" accept=".json,application/json" hidden>
-      </div>
-    </div>
-    <div class="tablewrap"><table id="grid"></table></div>
-    <p class="hint no-print">Na unidade SR, outubro de 2026 foi pré-preenchido por leitura visual da foto enviada. Revise marcações rabiscadas ou pouco nítidas antes de usar os totais. Para imprimir a grade, use o botão “Imprimir / salvar PDF”. A exportação CSV abre no Excel; o backup JSON guarda os lançamentos para continuar em outro dispositivo.</p>
-  </section>
 
-  <section class="panel">
+  <section class="panel pdf-summary">
+    <div class="pdf-meta">Relatório mensal de rotatividade do enxoval</div>
     <div class="cards">
       <div class="metric"><span class="label">Trocas registradas no mês</span><strong id="mTotal">0</strong></div>
       <div class="metric"><span class="label">Trocas de cama de casal</span><strong id="mCouple">0</strong></div>
@@ -101,7 +115,7 @@
     <p class="hint" id="summaryNote">A contagem considera L e LS como trocas realizadas.</p>
   </section>
 
-  <section class="panel">
+  <section class="panel pdf-summary">
     <h2 style="font-size:17px;margin:0 0 10px">Resumo por dia</h2>
     <div class="tablewrap" style="max-height:320px"><table id="daily"></table></div>
     <p class="hint">“Enxoval de casal” significa uma troca registrada numa cama de casal. “Cama de solteiro” conta camas individuais trocadas; quartos compartilhados não são multiplicados como se cada cama usasse o conjunto completo de 17 peças.</p>
