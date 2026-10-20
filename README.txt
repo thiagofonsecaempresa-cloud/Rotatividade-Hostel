@@ -1,7 +1,7 @@
-ROTATIVIDADE DO HOSTEL — VERSÃO 5
+ROTATIVIDADE DO HOSTEL — VERSÃO 5.1 (CRÉDITOS)
 
-Esta versão é autocontida: publique apenas o arquivo index.html na raiz do repositório GitHub Pages. CSS e JavaScript já estão embutidos no HTML, evitando que controles sumam se app.js ou styles.css não forem enviados.
+Esta versão mantém a funcionalidade da versão 5 e acrescenta apenas os créditos no rodapé: “Desenvolvido por Thiago Fonseca — Concepção, desenvolvimento e aprimoramento do sistema.”
 
-Fluxo: escolha unidade e mês; em “Lançamento por dia”, escolha o dia e toque no cartão do quarto para abrir as camas; selecione L, LS, X ou Em branco. A grade mensal fica logo abaixo. Exportação CSV, backup/importação JSON e impressão em PDF continuam disponíveis.
+Publique/substitua somente o arquivo index.html na raiz do repositório GitHub Pages. O CSS e o JavaScript estão embutidos no HTML. Os arquivos styles.css e app.js antigos podem continuar no repositório sem interferir.
 
-O botão para limpar o mês foi movido para uma área de manutenção recolhida no fim da página e exige confirmação. Faça backup JSON antes de substituir a versão publicada. Os dados locais existentes dependem da mesma origem e navegador; substitua o HTML sem limpar os dados do Safari.
+Faça backup JSON antes de atualizar, por precaução.
