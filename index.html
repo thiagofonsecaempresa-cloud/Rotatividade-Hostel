@@ -359,7 +359,7 @@ function jsonBackup(){
  // Salva o mês atual antes de coletar o histórico completo.
  localStorage.setItem(key(),JSON.stringify(data));
  const records={};
- const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\\d{4}-\\d{2}$/;
+ const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\d{4}-\d{2}$/;
  for(let i=0;i<localStorage.length;i++){
    const storageKey=localStorage.key(i);
    if(storageKey && monthKeyPattern.test(storageKey)) records[storageKey]=localStorage.getItem(storageKey);
@@ -383,7 +383,7 @@ $('jsonFile').addEventListener('change',async e=>{
    if(obj.app!=="Rotatividade do Hostel")throw new Error("Aplicativo inválido");
    if(obj.backupType==="complete" && obj.records && typeof obj.records==="object"){
      const validRecords=[];
-     const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\\d{4}-\\d{2}$/;
+     const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\d{4}-\d{2}$/;
      for(const [storageKey,raw] of Object.entries(obj.records)){
        if(!monthKeyPattern.test(storageKey))continue;
        const parsed=typeof raw==="string"?JSON.parse(raw):raw;
