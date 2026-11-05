@@ -122,7 +122,7 @@ button.danger{background:#fff0ef;border:1px solid #d99b96;color:#8b2520;margin:8
         <select id="unit"><option value="SR">SR</option><option value="MK">MK</option></select>
       </label>
       <label class="field">Mês
-        <input id="month" type="month" value="2026-10">
+        <input id="month" type="month" value="2026-11">
       </label>
       <label class="field">Nome do responsável (opcional)
         <input id="responsible" type="text" placeholder="Quem está preenchendo">
@@ -270,6 +270,14 @@ function load(){
    const saved=localStorage.getItem(key());
    if(saved) data=JSON.parse(saved);
    else data=blankMonth();
+   // Limpa uma única vez os registros indevidos de SR/novembro de 2026.
+   // Depois da primeira abertura, os novos lançamentos são preservados normalmente.
+   const novemberFixKey="hostel-rotatividade-fix-SR-2026-11-v1";
+   if($('unit').value==="SR" && $('month').value==="2026-11" && localStorage.getItem(novemberFixKey)!=="done"){
+     data=blankMonth();
+     localStorage.setItem(key(),JSON.stringify(data));
+     localStorage.setItem(novemberFixKey,"done");
+   }
    if($('unit').value==="SR" && $('month').value==="2026-10" && (!data.cells || Object.keys(data.cells).length===0)){
      data=blankMonth();
      octoberSeedRows.forEach((row,i)=>row.forEach((v,j)=>{if(v)data.cells[`${i}|${j+1}`]=v}));
@@ -346,7 +354,19 @@ function csv(){
  const text=rows.map(r=>r.map(x=>`"${String(x??"").replace(/"/g,'""')}"`).join(";")).join("\r\n");
  download(`rotatividade_hostel_${$('unit').value}_${$('month').value}.csv`,"\ufeff"+text,"text/csv;charset=utf-8");
 }
-function jsonBackup(){data.responsible=$('responsible').value;download(`backup_rotatividade_${$('unit').value}_${$('month').value}.json`,JSON.stringify({app:"Rotatividade do Hostel",version:2,unit:$('unit').value,month:$('month').value,data},null,2),"application/json")}
+function jsonBackup(){
+ data.responsible=$('responsible').value;
+ // Salva o mês atual antes de coletar o histórico completo.
+ localStorage.setItem(key(),JSON.stringify(data));
+ const records={};
+ const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\\d{4}-\\d{2}$/;
+ for(let i=0;i<localStorage.length;i++){
+   const storageKey=localStorage.key(i);
+   if(storageKey && monthKeyPattern.test(storageKey)) records[storageKey]=localStorage.getItem(storageKey);
+ }
+ const backup={app:"Rotatividade do Hostel",version:3,backupType:"complete",createdAt:new Date().toISOString(),selectedUnit:$('unit').value,selectedMonth:$('month').value,records};
+ download(`backup_completo_rotatividade_hostel_${new Date().toISOString().slice(0,10)}.json`,JSON.stringify(backup,null,2),"application/json");
+}
 $('month').addEventListener('change',load);
 $('entryDay').addEventListener('change',updateDayEntry);
 $('unit').addEventListener('change',load);
@@ -356,7 +376,42 @@ $('clearMonth').addEventListener('click',()=>{if(confirm("ATENÇÃO: apagar toda
 $('csvBtn').addEventListener('click',csv);
 $('jsonBtn').addEventListener('click',jsonBackup);
 $('importBtn').addEventListener('click',()=>$('jsonFile').click());
-$('jsonFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const obj=JSON.parse(await f.text());if(!obj.data||!obj.month)throw new Error();$('month').value=obj.month;if(obj.unit && ['SR','MK'].includes(obj.unit))$('unit').value=obj.unit;data=obj.data;persist(false);load();alert("Backup importado. Os dados deste mês foram carregados neste dispositivo.")}catch(err){alert("Esse arquivo não parece ser um backup válido deste sistema.")}e.target.value=""});
+$('jsonFile').addEventListener('change',async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{
+   const obj=JSON.parse(await f.text());
+   if(obj.app!=="Rotatividade do Hostel")throw new Error("Aplicativo inválido");
+   if(obj.backupType==="complete" && obj.records && typeof obj.records==="object"){
+     const validRecords=[];
+     const monthKeyPattern=/^hostel-rotatividade-(SR|MK)-\\d{4}-\\d{2}$/;
+     for(const [storageKey,raw] of Object.entries(obj.records)){
+       if(!monthKeyPattern.test(storageKey))continue;
+       const parsed=typeof raw==="string"?JSON.parse(raw):raw;
+       if(!parsed || typeof parsed!=="object" || !parsed.cells || typeof parsed.cells!=="object")throw new Error("Registro mensal inválido");
+       validRecords.push([storageKey,JSON.stringify(parsed)]);
+     }
+     if(!validRecords.length)throw new Error("Backup sem meses válidos");
+     if(!confirm("Este backup completo substituirá todos os meses e unidades salvos neste navegador. Deseja continuar?"))return;
+     const currentKeys=[];
+     for(let i=0;i<localStorage.length;i++){const storageKey=localStorage.key(i);if(storageKey && monthKeyPattern.test(storageKey))currentKeys.push(storageKey)}
+     currentKeys.forEach(storageKey=>localStorage.removeItem(storageKey));
+     validRecords.forEach(([storageKey,raw])=>localStorage.setItem(storageKey,raw));
+     // Impede que a limpeza inicial de novembro apague dados restaurados por este backup.
+     localStorage.setItem("hostel-rotatividade-fix-SR-2026-11-v1","done");
+     if(obj.selectedMonth)$('month').value=obj.selectedMonth;
+     if(obj.selectedUnit && ['SR','MK'].includes(obj.selectedUnit))$('unit').value=obj.selectedUnit;
+     load();
+     alert("Backup completo restaurado. Todos os meses e unidades foram recuperados.");
+   }else if(obj.data && obj.month){
+     // Compatibilidade com backups antigos, que continham apenas um mês.
+     $('month').value=obj.month;
+     if(obj.unit && ['SR','MK'].includes(obj.unit))$('unit').value=obj.unit;
+     data=obj.data;persist(false);load();
+     alert("Backup de um mês importado. Os demais meses foram mantidos.");
+   }else throw new Error("Formato inválido");
+ }catch(err){alert("Não foi possível importar: "+(err.message||"arquivo inválido"))}
+ e.target.value="";
+});
 $('printBtn').addEventListener('click',()=>{persist(false);window.print()});
 load();
 })();
